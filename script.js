@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 class Squirrel {
   /**
@@ -7,7 +7,7 @@ class Squirrel {
    * @param {string} color
    */
   constructor(name, color) {
-    this._name = name;
+    this.name = name;
     this.color = color;
   }
   get name() {
@@ -18,6 +18,15 @@ class Squirrel {
       throw new TypeError("name must be string");
     }
     this._name = name;
+  }
+  get color() {
+    return this._color;
+  }
+  set color(color) {
+    if (typeof color !== "string") {
+      throw new TypeError("name must be string");
+    }
+    this._color = color;
   }
   jump() {
     return `${this.name} is jumping`;
@@ -61,8 +70,14 @@ class MagicSquirrel extends FlySquirrel {
     super(name, color);
     this.words = words;
   }
+  get words() {
+    return this._words;
+  }
+  set words(words) {
+    this._words = words;
+  }
   sayWords() {
-    words.forEach(function (array_item) {
+    this.words.forEach((array_item) => {
       console.log(array_item); // words is not defined at MagicSquirrel.sayWords (script.js:127:5) at script.js:146:29
     });
   }
@@ -104,20 +119,8 @@ class Product {
    * @param {number} amount
    */
   constructor(name, price, currency, amount) {
-    if (typeof amount !== "number") {
-      throw new TypeError("amount must be number");
-    }
-    if (amount < 0) {
-      throw new RangeError("amount must be more than 0");
-    }
-    if (Number.isInteger(amount) === false) {
-      throw new TypeError("amount must be integer");
-    }
-    if (typeof currency !== "string") {
-      throw new TypeError("currency must be number");
-    }
-    this._name = name;
-    this._price = price;
+    this.name = name;
+    this.price = price;
     this.currency = currency;
     this.amount = amount;
   }
@@ -134,19 +137,49 @@ class Product {
     return this._price;
   }
   set price(price) {
-    if (price < 0) {
-      throw new RangeError("price must be higher than 0");
-    }
     if (typeof price !== "number") {
       throw new TypeError("price must be number");
     }
+    if (price < 0) {
+      throw new RangeError("price must be higher than 0");
+    }
     this._price = price;
+  }
+  get currency() {
+    return this._currency;
+  }
+  set currency(currency) {
+    if (typeof currency !== "string") {
+      throw new TypeError("currency must be string");
+    }
+    this._currency = currency;
+  }
+  get amount() {
+    return this._amount;
+  }
+  set amount(amount) {
+    if (typeof amount !== "number") {
+      throw new TypeError("amount must be number");
+    }
+    if (amount < 0) {
+      throw new RangeError("amount must be more than 0");
+    }
+    if (Number.isInteger(amount) === false) {
+      throw new TypeError("amount must be integer");
+    }
+    this._amount = amount;
   }
   productInfo() {
     return `${this.name}, price = ${this.price}${this.currency}, amount = ${this.amount}`;
   }
-  buyProduct() {
-    return this.amount * this.price;
+  buyProduct(amountPurchase) {
+    if (typeof amountPurchase !== "number") {
+      throw new TypeError("amount must be number");
+    }
+    if (amountPurchase > this.amount) {
+      throw new RangeError("not enough products");
+    }
+    return amountPurchase * this.price;
   }
 }
 class PhysicalProduct extends Product {
@@ -160,13 +193,19 @@ class PhysicalProduct extends Product {
    */
   constructor(name, price, currency, amount, weight) {
     super(name, price, currency, amount);
+    this.weight = weight;
+  }
+  get weight() {
+    return this._weight;
+  }
+  set weight(weight) {
     if (typeof weight !== "number") {
       throw new TypeError("weight must be number");
     }
     if (weight < 0) {
       throw new RangeError("weight must be more than 0");
     }
-    this.weight = weight;
+    this._weight = weight;
   }
 }
 class VirtualProduct extends Product {
@@ -180,13 +219,19 @@ class VirtualProduct extends Product {
    */
   constructor(name, price, currency, amount, memorySize) {
     super(name, price, currency, amount);
+    this.memorySize = memorySize;
+  }
+  get memorySize() {
+    return this._memorySize;
+  }
+  set memorySize(memorySize) {
     if (typeof memorySize !== "number") {
       throw new TypeError("memorySize must be number");
     }
     if (memorySize < 0) {
       throw new RangeError("memorySize must be more than 0");
     }
-    this.memorySize = memorySize;
+    this._memorySize = memorySize;
   }
 }
 try {
@@ -194,10 +239,9 @@ try {
   const product2 = new PhysicalProduct("tv", 400, "$", 3, 20);
   const product3 = new VirtualProduct("cloud", 13, "$", 4, 500);
   console.log(product1.productInfo());
-  console.log(product1.buyProduct());
+  console.log(product1.buyProduct(4));
   console.log(product2.productInfo());
   console.log(product2.weight);
-  console.log(product3);
   console.log(product3.memorySize);
 } catch (error) {
   console.log(error);
